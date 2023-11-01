@@ -1,0 +1,149 @@
+---
+title: "Assignment 5"
+author: "Shubham Bhargava"
+date: "2023-10-28"
+output: html_document
+---
+
+```{r}
+
+library(fpp)
+library(fpp2)
+library(TTR)
+library(readxl)
+
+# Reading Data 
+
+dataframe <- read_excel("C:/Users/Student/Desktop/BF/Sunspots.xlsx")
+
+# Converting to Time Series Data 
+
+Time_series= ts(dataframe$`Monthly Mean Total Sunspot Number`, start = c(2013,01),end= c (2020,12),frequency = 12)
+Time_series
+
+# Attributes and Structure
+
+attributes(Time_series)
+str(Time_series) 
+
+```
+
+# Decomposition 
+
+## Seasonal Decomposition of Time Series by Loess (STL) Method
+
+```{r}
+
+head(Time_series)
+plot(Time_series)
+stl_decomp <- stl(Time_series,s.window ="periodic")
+plot(stl_decomp)
+attributes(stl_decomp)
+
+```
+
+# Taking out Seasonal Adjustment 
+
+```{r}
+
+seasadj(stl_decomp)
+
+```
+
+# Plot a line on the graph
+
+```{r}
+
+plot(Time_series)
+lines(seasadj(stl_decomp), col= "Red")
+
+```
+
+# Default period forecast
+
+```{r}
+
+Time_series_forecast <- forecast(stl_decomp)
+
+```
+# Forecasting the Seasonally Adjusted Decomposed Time Series
+
+```{r}
+Time_series_forecast <- forecast(stl_decomp,h=20)
+plot(Time_series_forecast)
+
+```
+
+## Plotting the seasonal component
+
+```{r}
+
+plot(stl_decomp$time.series[, "seasonal"], main="Seasonal Component")
+
+```
+
+## Plotting the trend component
+
+```{r}
+
+plot(stl_decomp$time.series[, "trend"], main="Trend Component")
+
+```
+
+## Plotting the remainder component
+```{r}
+
+plot(stl_decomp$time.series[, "remainder"], main="Remainder (Residual) Component")
+
+```
+
+# Other Method Of Decomposition
+
+```{r}
+
+decomp_elec <- decompose(Time_series)
+plot(decomp_elec)
+
+```
+
+
+# Each one shows different attributes 
+
+```{r}
+
+attributes(decomp_elec)
+seasadj(decomp_elec)
+
+```
+
+
+## Using Decompose Function
+
+```{r}
+
+Time_series_decompose <- decompose(Time_series)
+attributes(Time_series_decompose)
+plot(Time_series_decompose)
+
+
+```
+
+# Seasonal Adjustment
+
+```{r}
+Time_series_decompose_seasadj = seasadj(Time_series_decompose)
+plot(Time_series_decompose_seasadj)
+
+```
+
+# Plotting Line Seasonally Adjusted Decomposed TS with the original Time Series
+
+```{r}
+
+plot(Time_series)
+lines(Time_series_decompose_seasadj, col="green")
+
+
+
+
+
